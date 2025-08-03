@@ -91,15 +91,16 @@ int[] diceValues=new int [5];
     }
 
     private int calculateScore(Player player,String category) {
-        int[] diceValues = dice.getValues();
-        Arrays.sort(diceValues);
+        // Fix: Use the current diceValues instead of dice.getValues()
+        int[] currentDiceValues = diceValues.clone();
+        Arrays.sort(currentDiceValues);
         Map<Integer, Long> frequencyMap = new HashMap<>();
-        for (int value : diceValues) {
+        for (int value : currentDiceValues) {
             frequencyMap.put(value, frequencyMap.getOrDefault(value, 0L) + 1);
         }
 
         int score = 0;
-        switch (category) {
+        switch (category.toLowerCase()) {
             case "1s":
             case "2s":
             case "3s":
@@ -112,7 +113,7 @@ int[] diceValues=new int [5];
             case "three_of_a_kind":
                 for (Map.Entry<Integer, Long> entry : frequencyMap.entrySet()) {
                     if (entry.getValue() >= 3) {
-                        score = Arrays.stream(diceValues).sum();
+                        score = Arrays.stream(currentDiceValues).sum();
                         break;
                     }
                 }
@@ -120,7 +121,7 @@ int[] diceValues=new int [5];
             case "four_of_a_kind":
                 for (Map.Entry<Integer, Long> entry : frequencyMap.entrySet()) {
                     if (entry.getValue() >= 4) {
-                        score = Arrays.stream(diceValues).sum();
+                        score = Arrays.stream(currentDiceValues).sum();
                         break;
                     }
                 }
@@ -131,15 +132,15 @@ int[] diceValues=new int [5];
                 }
                 break;
             case "small_straight":
-                if (Arrays.toString(diceValues).contains("1") && Arrays.toString(diceValues).contains("2") && Arrays.toString(diceValues).contains("3") && Arrays.toString(diceValues).contains("4") ||
-                        Arrays.toString(diceValues).contains("2") && Arrays.toString(diceValues).contains("3") && Arrays.toString(diceValues).contains("4") && Arrays.toString(diceValues).contains("5") ||
-                        Arrays.toString(diceValues).contains("3") && Arrays.toString(diceValues).contains("4") && Arrays.toString(diceValues).contains("5") && Arrays.toString(diceValues).contains("6")) {
+                if (Arrays.toString(currentDiceValues).contains("1") && Arrays.toString(currentDiceValues).contains("2") && Arrays.toString(currentDiceValues).contains("3") && Arrays.toString(currentDiceValues).contains("4") ||
+                        Arrays.toString(currentDiceValues).contains("2") && Arrays.toString(currentDiceValues).contains("3") && Arrays.toString(currentDiceValues).contains("4") && Arrays.toString(currentDiceValues).contains("5") ||
+                        Arrays.toString(currentDiceValues).contains("3") && Arrays.toString(currentDiceValues).contains("4") && Arrays.toString(currentDiceValues).contains("5") && Arrays.toString(currentDiceValues).contains("6")) {
                     score = 30;
                 }
                 break;
             case "large_straight":
-                if (Arrays.toString(diceValues).contains("1") && Arrays.toString(diceValues).contains("2") && Arrays.toString(diceValues).contains("3") && Arrays.toString(diceValues).contains("4") && Arrays.toString(diceValues).contains("5") ||
-                        Arrays.toString(diceValues).contains("2") && Arrays.toString(diceValues).contains("3") && Arrays.toString(diceValues).contains("4") && Arrays.toString(diceValues).contains("5") && Arrays.toString(diceValues).contains("6")) {
+                if (Arrays.toString(currentDiceValues).contains("1") && Arrays.toString(currentDiceValues).contains("2") && Arrays.toString(currentDiceValues).contains("3") && Arrays.toString(currentDiceValues).contains("4") && Arrays.toString(currentDiceValues).contains("5") ||
+                        Arrays.toString(currentDiceValues).contains("2") && Arrays.toString(currentDiceValues).contains("3") && Arrays.toString(currentDiceValues).contains("4") && Arrays.toString(currentDiceValues).contains("5") && Arrays.toString(currentDiceValues).contains("6")) {
                     score = 40;
                 }
                 break;
@@ -149,14 +150,15 @@ int[] diceValues=new int [5];
                 }
                 break;
             case "chance":
-                score = Arrays.stream(diceValues).sum();
+                score = Arrays.stream(currentDiceValues).sum();
                 break;
         }
         return score;
     }
 
     private void displayPotentialScores(Player player) {
-        int[] diceValues = dice.getValues();
+        // Fix: Use the current diceValues instead of dice.getValues()
+        int[] currentDiceValues = diceValues.clone();
         Map<String, Integer> potentialScores = new LinkedHashMap<>();
 
         // Calculate potential scores for all categories
@@ -183,8 +185,7 @@ int[] diceValues=new int [5];
     public static void main(String[] args) {
 
         YahtzeeGame game = new YahtzeeGame();
-        for (int i = 0; i < 13; i++) {
-            game.playGame();
-        }
+        // Fix: Only call playGame() once instead of 13 times
+        game.playGame();
     }
 }

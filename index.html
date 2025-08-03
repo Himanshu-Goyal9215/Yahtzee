@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yahtzee Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Top-right Info Bar -->
+        <div class="info-bar">
+            <div class="info-text">
+                <span class="info-label">PLAYER:</span>
+                <span class="info-value" id="current-player">HIMANSHU</span>
+                <span class="info-label">ROUND:</span>
+                <span class="info-value" id="current-round">1</span>
+                <span class="info-label">ROLLS:</span>
+                <span class="info-value" id="rolls-left">2</span>
+            </div>
+        </div>
+
+        <!-- Main Game Board -->
+        <div class="game-board">
+            <!-- Three-Column Scorecard Container -->
+            <div class="scorecard-container">
+                <!-- Left Column: Rounds -->
+                <div class="rounds-column">
+                    <div class="round-item" data-category="1s">
+                        <div class="round-icon">⚀</div>
+                        <div class="round-label">Ones</div>
+                        <div class="round-count">(1)</div>
+                    </div>
+                    <div class="round-item" data-category="2s">
+                        <div class="round-icon">⚁</div>
+                        <div class="round-label">Twos</div>
+                        <div class="round-count">(2)</div>
+                    </div>
+                    <div class="round-item" data-category="3s">
+                        <div class="round-icon">⚂</div>
+                        <div class="round-label">Threes</div>
+                        <div class="round-count">(3)</div>
+                    </div>
+                    <div class="round-item" data-category="4s">
+                        <div class="round-icon">⚃</div>
+                        <div class="round-label">Fours</div>
+                        <div class="round-count">(4)</div>
+                    </div>
+                    <div class="round-item" data-category="5s">
+                        <div class="round-icon">⚄</div>
+                        <div class="round-label">Fives</div>
+                        <div class="round-count">(5)</div>
+                    </div>
+                    <div class="round-item" data-category="6s">
+                        <div class="round-icon">⚅</div>
+                        <div class="round-label">Sixes</div>
+                        <div class="round-count">(6)</div>
+                    </div>
+                    <div class="round-item" data-category="three_of_a_kind">
+                        <div class="round-icon">🎲</div>
+                        <div class="round-label">3 of a Kind</div>
+                        <div class="round-count">(16)</div>
+                    </div>
+                    <div class="round-item" data-category="four_of_a_kind">
+                        <div class="round-icon">🎲</div>
+                        <div class="round-label">4 of a Kind</div>
+                        <div class="round-count">(0)</div>
+                    </div>
+                    <div class="round-item" data-category="full_house">
+                        <div class="round-icon">🏠</div>
+                        <div class="round-label">Full House</div>
+                        <div class="round-count">(0)</div>
+                    </div>
+                    <div class="round-item" data-category="small_straight">
+                        <div class="round-icon">📏</div>
+                        <div class="round-label">Small Straight</div>
+                        <div class="round-count">(0)</div>
+                    </div>
+                    <div class="round-item" data-category="large_straight">
+                        <div class="round-icon">📏</div>
+                        <div class="round-label">Large Straight</div>
+                        <div class="round-count">(0)</div>
+                    </div>
+                    <div class="round-item" data-category="yahtzee">
+                        <div class="round-icon">🎯</div>
+                        <div class="round-label">Yahtzee</div>
+                        <div class="round-count">(0)</div>
+                    </div>
+                    <div class="round-item" data-category="chance">
+                        <div class="round-icon">❓</div>
+                        <div class="round-label">Chance</div>
+                        <div class="round-count">(0)</div>
+                    </div>
+                </div>
+
+                <!-- Center Column: Player A -->
+                <div class="player-column player-a">
+                    <div class="player-header">
+                        <div class="player-name" id="player1-name">HIMANSHU</div>
+                    </div>
+                    <div class="score-cells">
+                        <div class="score-cell" data-category="1s" data-player="0"></div>
+                        <div class="score-cell" data-category="2s" data-player="0"></div>
+                        <div class="score-cell" data-category="3s" data-player="0"></div>
+                        <div class="score-cell" data-category="4s" data-player="0"></div>
+                        <div class="score-cell" data-category="5s" data-player="0"></div>
+                        <div class="score-cell" data-category="6s" data-player="0"></div>
+                        <div class="score-cell" data-category="three_of_a_kind" data-player="0"></div>
+                        <div class="score-cell" data-category="four_of_a_kind" data-player="0"></div>
+                        <div class="score-cell" data-category="full_house" data-player="0"></div>
+                        <div class="score-cell" data-category="small_straight" data-player="0"></div>
+                        <div class="score-cell" data-category="large_straight" data-player="0"></div>
+                        <div class="score-cell" data-category="yahtzee" data-player="0"></div>
+                        <div class="score-cell" data-category="chance" data-player="0"></div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Player B -->
+                <div class="player-column player-b">
+                    <div class="player-header">
+                        <div class="player-name" id="player2-name">HITESH</div>
+                    </div>
+                    <div class="score-cells">
+                        <div class="score-cell" data-category="1s" data-player="1"></div>
+                        <div class="score-cell" data-category="2s" data-player="1"></div>
+                        <div class="score-cell" data-category="3s" data-player="1"></div>
+                        <div class="score-cell" data-category="4s" data-player="1"></div>
+                        <div class="score-cell" data-category="5s" data-player="1"></div>
+                        <div class="score-cell" data-category="6s" data-player="1"></div>
+                        <div class="score-cell" data-category="three_of_a_kind" data-player="1"></div>
+                        <div class="score-cell" data-category="four_of_a_kind" data-player="1"></div>
+                        <div class="score-cell" data-category="full_house" data-player="1"></div>
+                        <div class="score-cell" data-category="small_straight" data-player="1"></div>
+                        <div class="score-cell" data-category="large_straight" data-player="1"></div>
+                        <div class="score-cell" data-category="yahtzee" data-player="1"></div>
+                        <div class="score-cell" data-category="chance" data-player="1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Controls (Pinned Footer) -->
+            <div class="bottom-controls">
+                <!-- Dice Row -->
+                <div class="dice-container">
+                    <div class="die" data-index="0">
+                        <div class="die-face">?</div>
+                        <div class="die-keep">
+                            <input type="checkbox" id="keep-0" class="keep-checkbox">
+                            <label for="keep-0">Keep</label>
+                        </div>
+                    </div>
+                    <div class="die" data-index="1">
+                        <div class="die-face">?</div>
+                        <div class="die-keep">
+                            <input type="checkbox" id="keep-1" class="keep-checkbox">
+                            <label for="keep-1">Keep</label>
+                        </div>
+                    </div>
+                    <div class="die" data-index="2">
+                        <div class="die-face">?</div>
+                        <div class="die-keep">
+                            <input type="checkbox" id="keep-2" class="keep-checkbox">
+                            <label for="keep-2">Keep</label>
+                        </div>
+                    </div>
+                    <div class="die" data-index="3">
+                        <div class="die-face">?</div>
+                        <div class="die-keep">
+                            <input type="checkbox" id="keep-3" class="keep-checkbox">
+                            <label for="keep-3">Keep</label>
+                        </div>
+                    </div>
+                    <div class="die" data-index="4">
+                        <div class="die-face">?</div>
+                        <div class="die-keep">
+                            <input type="checkbox" id="keep-4" class="keep-checkbox">
+                            <label for="keep-4">Keep</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Roll Button -->
+                <button id="roll-btn" class="roll-button">ROLL</button>
+            </div>
+        </div>
+
+        <!-- Game Controls -->
+        <div class="game-controls">
+            <button id="new-game-btn" class="control-btn">New Game</button>
+            <button id="rules-btn" class="control-btn">Rules</button>
+        </div>
+    </div>
+
+    <!-- Game Mode Selection Modal -->
+    <div id="mode-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Choose Game Mode</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="mode-option" data-mode="friend">
+                    <div class="mode-icon">👥</div>
+                    <div class="mode-text">
+                        <h3>Play vs Friend</h3>
+                        <p>Play against another player</p>
+                    </div>
+                </div>
+                <div class="mode-option" data-mode="bot">
+                    <div class="mode-icon">🤖</div>
+                    <div class="mode-text">
+                        <h3>Play vs Bot</h3>
+                        <p>Play against AI opponent</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Names Modal -->
+    <div id="names-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Enter Player Names</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="name-input-group">
+                    <label for="player1-input">Player 1 Name:</label>
+                    <input type="text" id="player1-input" placeholder="Enter name" value="HIMANSHU">
+                </div>
+                <div class="name-input-group">
+                    <label for="player2-input">Player 2 Name:</label>
+                    <input type="text" id="player2-input" placeholder="Enter name" value="HITESH">
+                </div>
+                <button id="start-game-btn" class="start-btn">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rules Modal -->
+    <div id="rules-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Yahtzee Rules</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="rule-section">
+                    <h3>Upper Section</h3>
+                    <p>Score the sum of dice showing the specified number (1s, 2s, 3s, 4s, 5s, 6s).</p>
+                </div>
+                <div class="rule-section">
+                    <h3>Lower Section</h3>
+                    <p><strong>3 of a Kind:</strong> Sum of all dice if at least 3 show the same number.<br>
+                    <strong>4 of a Kind:</strong> Sum of all dice if at least 4 show the same number.<br>
+                    <strong>Full House:</strong> 25 points for 3 of one number and 2 of another.<br>
+                    <strong>Small Straight:</strong> 30 points for 4 consecutive numbers.<br>
+                    <strong>Large Straight:</strong> 40 points for 5 consecutive numbers.<br>
+                    <strong>Yahtzee:</strong> 50 points for 5 of the same number.<br>
+                    <strong>Chance:</strong> Sum of all dice.</p>
+                </div>
+                <div class="rule-section">
+                    <h3>How to Play</h3>
+                    <p>Roll the dice up to 3 times per turn. Keep dice you want to save by clicking them. Choose a category to score your roll. Each category can only be used once per game.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
