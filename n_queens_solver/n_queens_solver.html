@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Queens Solver</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .board-size-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .board-size-input input {
+            width: 80px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .btn-solve {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-solve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-clear {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-step {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn-step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chessboard {
+            display: grid;
+            gap: 2px;
+            background: #333;
+            border: 3px solid #333;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .cell.light {
+            background: #f0d9b5;
+        }
+
+        .cell.dark {
+            background: #b58863;
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell.queen {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .cell.queen::before {
+            content: "♕";
+            font-size: 1.2em;
+        }
+
+        .status {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .chessboard {
+                max-width: 350px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>♕ N-Queens Solver</h1>
+        
+        <div class="description">
+            Place N queens on an N×N chessboard so that no two queens threaten each other.
+            Queens can move horizontally, vertically, and diagonally.
+        </div>
+
+        <div class="controls">
+            <div class="board-size-input">
+                <label for="board-size">Board Size:</label>
+                <input type="number" id="board-size" value="8" min="1" max="50">
+            </div>
+            <button class="btn btn-solve" onclick="solveNQueens()">Solve</button>
+            <button class="btn btn-clear" onclick="clearBoard()">Clear</button>
+        </div>
+
+        <div id="chessboard" class="chessboard">
+            <!-- Chessboard will be generated by JavaScript -->
+        </div>
+
+        <div id="status" class="status" style="display: none;"></div>
+    </div>
+
+    <script>
+        let currentBoard = [];
+        let boardSize = 8;
+
+        // Initialize the chessboard
+        function initializeBoard() {
+            const chessboard = document.getElementById('chessboard');
+            chessboard.innerHTML = '';
+            
+            chessboard.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
+            
+            currentBoard = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
+            
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = `cell ${(i + j) % 2 === 0 ? 'light' : 'dark'}`;
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    
+                    cell.addEventListener('click', function() {
+                        toggleQueen(i, j);
+                    });
+                    
+                    chessboard.appendChild(cell);
+                }
+            }
+        }
+
+        // Toggle queen placement
+        function toggleQueen(row, col) {
+            if (currentBoard[row][col] === 1) {
+                currentBoard[row][col] = 0;
+            } else {
+                currentBoard[row][col] = 1;
+            }
+            updateBoardDisplay();
+        }
+
+        // Update board display
+        function updateBoardDisplay() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                
+                cell.className = `cell ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                
+                if (currentBoard[row][col] === 1) {
+                    cell.classList.add('queen');
+                }
+            });
+        }
+
+        // Solve N-Queens problem
+        function solveNQueens() {
+            boardSize = parseInt(document.getElementById('board-size').value);
+            if (boardSize < 1 || boardSize > 50) {
+                showStatus('Please enter a valid board size (1-50)', 'error');
+                return;
+            }
+
+            showStatus('Solving...', 'info');
+            
+            initializeBoard();
+            
+            const startTime = performance.now();
+            
+            setTimeout(() => {
+                const solution = solveQueens(boardSize);
+                const endTime = performance.now();
+                
+                if (solution) {
+                    currentBoard = solution;
+                    updateBoardDisplay();
+                    showStatus(`Solution found for ${boardSize}-queens problem in ${(endTime - startTime).toFixed(2)}ms!`, 'success');
+                } else {
+                    showStatus(`No solution exists for ${boardSize}-queens problem`, 'error');
+                }
+            }, 100);
+        }
+
+        // Check if position is safe
+        function isSafe(row, col) {
+            for (let c = 0; c < col; c++) {
+                if (currentBoard[row][c] === 1) return false;
+                if (Math.abs(currentBoard[row][c] - row) === Math.abs(c - col)) return false;
+            }
+            return true;
+        }
+
+        // Solve queens using backtracking
+        function solveQueens(n) {
+            const queens = new Array(n).fill(-1);
+            
+            if (solveQueensRecursive(queens, 0, n)) {
+                const board = Array(n).fill().map(() => Array(n).fill(0));
+                for (let i = 0; i < n; i++) {
+                    if (queens[i] !== -1) {
+                        board[queens[i]][i] = 1;
+                    }
+                }
+                return board;
+            }
+            return null;
+        }
+
+        // Recursive solving function
+        function solveQueensRecursive(queens, col, n) {
+            if (col >= n) return true;
+            
+            for (let row = 0; row < n; row++) {
+                if (isSafeQueens(queens, row, col, n)) {
+                    queens[col] = row;
+                    
+                    if (solveQueensRecursive(queens, col + 1, n)) {
+                        return true;
+                    }
+                    
+                    queens[col] = -1;
+                }
+            }
+            return false;
+        }
+
+        // Check if position is safe for queens array
+        function isSafeQueens(queens, row, col, n) {
+            for (let c = 0; c < col; c++) {
+                if (queens[c] === row) return false;
+                if (Math.abs(queens[c] - row) === Math.abs(c - col)) return false;
+            }
+            return true;
+        }
+
+        // Clear board
+        function clearBoard() {
+            currentBoard = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
+            updateBoardDisplay();
+            hideStatus();
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        // Hide status message
+        function hideStatus() {
+            const status = document.getElementById('status');
+            status.style.display = 'none';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBoard();
+        });
+
+        // Update board size
+        document.getElementById('board-size').addEventListener('change', function() {
+            boardSize = parseInt(this.value);
+            if (boardSize >= 1 && boardSize <= 50) {
+                initializeBoard();
+                hideStatus();
+            }
+        });
+    </script>
+</body>
+</html>

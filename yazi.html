@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yahtzee Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0b2b47 0%, #1a4a7a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .game-container {
+            display: flex;
+            max-width: 1400px;
+            width: 100%;
+            height: 90vh;
+            gap: 20px;
+        }
+
+        /* Left Game Board */
+        .game-board {
+            flex: 2;
+            background: #2d5a27;
+            border: 8px solid #8b4513;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Player Areas */
+        .player-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-area.top {
+            align-self: flex-start;
+        }
+
+        .player-area.bottom {
+            align-self: flex-end;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .player-name {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .dice-slots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dice-slot {
+            width: 50px;
+            height: 50px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Center Dice Area */
+        .dice-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+            margin: 20px 0;
+        }
+
+        /* Dice Styling */
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .dice:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .dice.held {
+            border-color: #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+            transform: scale(1.1);
+        }
+
+        .dice.rolling {
+            animation: roll 0.6s ease-in-out;
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(0.9); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* Dice Cup */
+        .dice-cup {
+            position: absolute;
+            bottom: 120px;
+            right: 30px;
+            width: 80px;
+            height: 60px;
+            background: #333;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .dice-cup:hover {
+            transform: scale(1.05);
+        }
+
+        .cup-rim {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 3px solid #555;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+
+        .cup-handle {
+            position: absolute;
+            top: -15px;
+            right: -20px;
+            width: 20px;
+            height: 30px;
+            background: #555;
+            border-radius: 10px;
+            transform: rotate(15deg);
+        }
+
+        /* Roll Button */
+        .roll-button {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 120px;
+        }
+
+        .roll-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.6);
+        }
+
+        .roll-button:active {
+            transform: translateY(-1px);
+        }
+
+        .roll-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Right Scoreboard */
+        .scoreboard-panel {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .scoreboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .scoreboard-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .scoreboard-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-icon {
+            width: 40px;
+            height: 40px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .control-icon:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+
+        /* Scoreboard Table */
+        .scoreboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .scoreboard-table th,
+        .scoreboard-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .scoreboard-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .scoreboard-table th:first-child {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .scoreboard-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .scoreboard-table .filled {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .scoreboard-table .possible-score {
+            color: #27ae60;
+            font-weight: bold;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .scoreboard-table .suggested {
+            color: #f39c12;
+            font-weight: bold;
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        .scoreboard-table .category-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        /* Top Controls */
+        .top-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 20;
+        }
+
+        .back-button {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        /* AI Suggestion Panel */
+        .ai-suggestion {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 250px;
+            z-index: 30;
+        }
+
+        .ai-suggestion h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .ai-suggestion p {
+            color: #34495e;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .game-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .game-board {
+                min-height: 500px;
+            }
+            
+            .scoreboard-panel {
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 10px;
+            }
+            
+            .game-board {
+                padding: 20px;
+            }
+            
+            .dice {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .roll-button {
+                padding: 15px 30px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Left Game Board -->
+        <div class="game-board">
+            <!-- Top Controls -->
+            <div class="top-controls">
+                <button class="back-button" onclick="goBack()">←</button>
+            </div>
+
+            <!-- AI Suggestion Panel -->
+            <div class="ai-suggestion" id="aiSuggestion" style="display: none;">
+                <h4>🤖 AI Suggestion</h4>
+                <p id="aiSuggestionText"></p>
+            </div>
+
+            <!-- Top Player (Amy) -->
+            <div class="player-area top">
+                <div class="avatar" id="amy-avatar">👩</div>
+                <div class="player-name">Amy</div>
+                <div class="dice-slots">
+                    <div class="dice-slot"></div>
+                    <div class="dice-slot"></div>
+                    <div class="dice-slot"></div>
+                </div>
+            </div>
+
+            <!-- Center Dice Area -->
+            <div class="dice-area" id="diceArea">
+                <!-- Dice will be generated by JavaScript -->
+            </div>
+
+            <!-- Bottom Player (You) -->
+            <div class="player-area bottom">
+                <div class="avatar" id="you-avatar">👨</div>
+                <div class="player-name">You</div>
+                <div class="dice-slots">
+                    <div class="dice-slot"></div>
+                    <div class="dice-slot"></div>
+                    <div class="dice-slot"></div>
+                </div>
+            </div>
+
+            <!-- Dice Cup -->
+            <div class="dice-cup" id="diceCup" onclick="rollDice()">
+                <div class="cup-rim"></div>
+                <div class="cup-handle"></div>
+            </div>
+
+            <!-- Roll Button -->
+            <button class="roll-button" id="rollBtn" onclick="rollDice()">Roll</button>
+        </div>
+
+        <!-- Right Scoreboard Panel -->
+        <div class="scoreboard-panel">
+            <div class="scoreboard-header">
+                <div class="scoreboard-title">Scoreboard</div>
+                <div class="scoreboard-controls">
+                    <button class="control-icon" onclick="restartGame()" title="Restart Game">🔄</button>
+                    <button class="control-icon" onclick="toggleSound()" title="Toggle Sound">🔊</button>
+                </div>
+            </div>
+
+            <table class="scoreboard-table" id="scoreboard">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>You</th>
+                        <th>Amy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="category-icon">⚀</span>Ones</td>
+                        <td class="filled" data-category="ones" data-player="you">1</td>
+                        <td data-category="ones" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">⚁</span>Twos</td>
+                        <td data-category="twos" data-player="you"></td>
+                        <td data-category="twos" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">⚂</span>Threes</td>
+                        <td data-category="threes" data-player="you"></td>
+                        <td data-category="threes" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">⚃</span>Fours</td>
+                        <td class="filled" data-category="fours" data-player="you">4</td>
+                        <td data-category="fours" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">⚄</span>Fives</td>
+                        <td class="filled" data-category="fives" data-player="you">15</td>
+                        <td data-category="fives" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">⚅</span>Sixes</td>
+                        <td data-category="sixes" data-player="you"></td>
+                        <td data-category="sixes" data-player="amy"></td>
+                    </tr>
+                    <tr class="subtotal-row">
+                        <td><strong>Sum</strong></td>
+                        <td data-category="sum" data-player="you">20</td>
+                        <td data-category="sum" data-player="amy">0</td>
+                    </tr>
+                    <tr class="bonus-row">
+                        <td><strong>Bonus</strong></td>
+                        <td data-category="bonus" data-player="you">0</td>
+                        <td data-category="bonus" data-player="amy">0</td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">🎲</span>Three of a Kind</td>
+                        <td class="filled" data-category="three_of_a_kind" data-player="you">16</td>
+                        <td data-category="three_of_a_kind" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">🎲</span>Four of a Kind</td>
+                        <td data-category="four_of_a_kind" data-player="you"></td>
+                        <td data-category="four_of_a_kind" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">🏠</span>Full House</td>
+                        <td data-category="full_house" data-player="you"></td>
+                        <td data-category="full_house" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">📏</span>Small Straight</td>
+                        <td data-category="small_straight" data-player="you"></td>
+                        <td data-category="small_straight" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">📏</span>Large Straight</td>
+                        <td data-category="large_straight" data-player="you"></td>
+                        <td data-category="large_straight" data-player="amy"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">❓</span>Chance</td>
+                        <td class="filled" data-category="chance" data-player="you">20</td>
+                        <td data-category="chance" data-player="amy">14</td>
+                    </tr>
+                    <tr>
+                        <td><span class="category-icon">🎯</span>Yatzy</td>
+                        <td data-category="yatzy" data-player="you"></td>
+                        <td data-category="yatzy" data-player="amy"></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>TOTAL SCORE</strong></td>
+                        <td data-category="total" data-player="you">56</td>
+                        <td data-category="total" data-player="amy">14</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Game State Variables
+        let currentDice = [1, 4, 6, 6, 6, 6];
+        let heldDice = new Set();
+        let currentPlayer = 'you';
+        let rollsLeft = 3;
+        let gameMode = 'friend'; // 'friend' or 'bot'
+        let scores = {
+            you: {
+                ones: 1, twos: null, threes: null, fours: 4, fives: 15, sixes: null,
+                three_of_a_kind: 16, four_of_a_kind: null, full_house: null,
+                small_straight: null, large_straight: null, yatzy: null, chance: 20
+            },
+            amy: {
+                ones: null, twos: null, threes: null, fours: null, fives: null, sixes: null,
+                three_of_a_kind: null, four_of_a_kind: null, full_house: null,
+                small_straight: null, large_straight: null, yatzy: null, chance: 14
+            }
+        };
+
+        // Initialize the game
+        function initGame() {
+            generateDice();
+            updateScoreboard();
+            updateRollButton();
+            showAISuggestion();
+        }
+
+        // Generate dice elements
+        function generateDice() {
+            const diceArea = document.getElementById('diceArea');
+            diceArea.innerHTML = '';
+            
+            currentDice.forEach((value, index) => {
+                const die = document.createElement('div');
+                die.className = 'dice';
+                die.textContent = value;
+                die.dataset.index = index;
+                die.onclick = () => toggleHold(index);
+                
+                if (heldDice.has(index)) {
+                    die.classList.add('held');
+                }
+                
+                diceArea.appendChild(die);
+            });
+        }
+
+        // Toggle dice hold
+        function toggleHold(index) {
+            if (rollsLeft < 3) { // Can only hold after first roll
+                if (heldDice.has(index)) {
+                    heldDice.delete(index);
+                } else {
+                    heldDice.add(index);
+                }
+                generateDice();
+                updateScoreboard();
+                showAISuggestion();
+            }
+        }
+
+        // Roll dice
+        function rollDice() {
+            if (rollsLeft <= 0) {
+                alert('No rolls left! Select a category to score.');
+                return;
+            }
+
+            // Add rolling animation
+            const dice = document.querySelectorAll('.dice');
+            dice.forEach((die, index) => {
+                if (!heldDice.has(index)) {
+                    die.classList.add('rolling');
+                    setTimeout(() => {
+                        die.classList.remove('rolling');
+                    }, 600);
+                }
+            });
+
+            // Roll unheld dice
+            currentDice.forEach((value, index) => {
+                if (!heldDice.has(index)) {
+                    currentDice[index] = Math.floor(Math.random() * 6) + 1;
+                }
+            });
+
+            rollsLeft--;
+            generateDice();
+            updateRollButton();
+            updateScoreboard();
+            showAISuggestion();
+        }
+
+        // Update roll button state
+        function updateRollButton() {
+            const rollBtn = document.getElementById('rollBtn');
+            if (rollsLeft <= 0) {
+                rollBtn.disabled = true;
+                rollBtn.textContent = 'No Rolls';
+            } else {
+                rollBtn.disabled = false;
+                rollBtn.textContent = `Roll (${rollsLeft})`;
+            }
+        }
+
+        // Calculate all possible scores
+        function calculateScores() {
+            const scores = {};
+            const counts = new Array(7).fill(0);
+            
+            currentDice.forEach(value => counts[value]++);
+            
+            // Upper section
+            for (let i = 1; i <= 6; i++) {
+                const category = i === 1 ? 'ones' : i === 2 ? 'twos' : i === 3 ? 'threes' : 
+                               i === 4 ? 'fours' : i === 5 ? 'fives' : 'sixes';
+                scores[category] = counts[i] * i;
+            }
+            
+            // Lower section
+            const sum = currentDice.reduce((a, b) => a + b, 0);
+            scores.chance = sum;
+            
+            // Three of a kind
+            if (counts.some(count => count >= 3)) {
+                scores.three_of_a_kind = sum;
+            } else {
+                scores.three_of_a_kind = 0;
+            }
+            
+            // Four of a kind
+            if (counts.some(count => count >= 4)) {
+                scores.four_of_a_kind = sum;
+            } else {
+                scores.four_of_a_kind = 0;
+            }
+            
+            // Full House
+            if (counts.some(count => count === 3) && counts.some(count => count === 2)) {
+                scores.full_house = 25;
+            } else {
+                scores.full_house = 0;
+            }
+            
+            // Small Straight
+            if ((counts[1] >= 1 && counts[2] >= 1 && counts[3] >= 1 && counts[4] >= 1) ||
+                (counts[2] >= 1 && counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1) ||
+                (counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1 && counts[6] >= 1)) {
+                scores.small_straight = 30;
+            } else {
+                scores.small_straight = 0;
+            }
+            
+            // Large Straight
+            if ((counts[1] >= 1 && counts[2] >= 1 && counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1) ||
+                (counts[2] >= 1 && counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1 && counts[6] >= 1)) {
+                scores.large_straight = 40;
+            } else {
+                scores.large_straight = 0;
+            }
+            
+            // Yatzy
+            if (counts.some(count => count === 5)) {
+                scores.yatzy = 50;
+            } else {
+                scores.yatzy = 0;
+            }
+            
+            return scores;
+        }
+
+        // Update scoreboard with possible scores
+        function updateScoreboard() {
+            const possibleScores = calculateScores();
+            
+            // Clear previous possible scores
+            document.querySelectorAll('.possible-score, .suggested').forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('possible-score', 'suggested');
+            });
+            
+            // Update with new possible scores
+            Object.keys(possibleScores).forEach(category => {
+                const cell = document.querySelector(`[data-category="${category}"][data-player="${currentPlayer}"]`);
+                if (cell && !cell.classList.contains('filled')) {
+                    const score = possibleScores[category];
+                    cell.textContent = score;
+                    
+                    if (score > 0) {
+                        cell.classList.add('possible-score');
+                    }
+                }
+            });
+            
+            // Update totals
+            updateTotals();
+        }
+
+        // Update totals and bonus
+        function updateTotals() {
+            const players = ['you', 'amy'];
+            
+            players.forEach(player => {
+                const upperSum = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes']
+                    .reduce((sum, category) => {
+                        const score = scores[player][category];
+                        return sum + (score || 0);
+                    }, 0);
+                
+                // Update sum
+                const sumCell = document.querySelector(`[data-category="sum"][data-player="${player}"]`);
+                if (sumCell) sumCell.textContent = upperSum;
+                
+                // Calculate bonus (35 points if upper section >= 63)
+                const bonus = upperSum >= 63 ? 35 : 0;
+                const bonusCell = document.querySelector(`[data-category="bonus"][data-player="${player}"]`);
+                if (bonusCell) bonusCell.textContent = bonus;
+                
+                // Calculate total
+                const total = Object.values(scores[player]).reduce((sum, score) => sum + (score || 0), 0) + bonus;
+                const totalCell = document.querySelector(`[data-category="total"][data-player="${player}"]`);
+                if (totalCell) totalCell.textContent = total;
+            });
+        }
+
+        // AI Move Suggestion
+        function showAISuggestion() {
+            const aiSuggestion = document.getElementById('aiSuggestion');
+            const aiSuggestionText = document.getElementById('aiSuggestionText');
+            
+            if (rollsLeft === 3) {
+                aiSuggestion.style.display = 'none';
+                return;
+            }
+            
+            const suggestion = generateAISuggestion();
+            aiSuggestionText.textContent = suggestion;
+            aiSuggestion.style.display = 'block';
+        }
+
+        // Generate AI suggestion using Monte Carlo approach
+        function generateAISuggestion() {
+            const possibleScores = calculateScores();
+            const availableCategories = Object.keys(possibleScores).filter(category => 
+                !scores[currentPlayer][category] && possibleScores[category] > 0
+            );
+            
+            if (availableCategories.length === 0) {
+                return "No good scoring options. Choose any available category.";
+            }
+            
+            // Find best scoring option
+            let bestCategory = availableCategories[0];
+            let bestScore = possibleScores[bestCategory];
+            
+            availableCategories.forEach(category => {
+                if (possibleScores[category] > bestScore) {
+                    bestScore = possibleScores[category];
+                    bestCategory = category;
+                }
+            });
+            
+            // Strategic advice based on dice
+            if (rollsLeft === 2) {
+                if (bestScore >= 25) {
+                    return `Great roll! Score ${bestCategory.replace('_', ' ')} for ${bestScore} points.`;
+                } else {
+                    return `Roll again to improve your score. Consider holding ${getHoldSuggestion()}.`;
+                }
+            } else if (rollsLeft === 1) {
+                if (bestScore >= 20) {
+                    return `Score ${bestCategory.replace('_', ' ')} for ${bestScore} points.`;
+                } else {
+                    return `Last roll! Hold ${getHoldSuggestion()} and hope for the best.`;
+                }
+            } else {
+                return `Choose ${bestCategory.replace('_', ' ')} for ${bestScore} points.`;
+            }
+        }
+
+        // Get dice holding suggestion
+        function getHoldSuggestion() {
+            const counts = new Array(7).fill(0);
+            currentDice.forEach(value => counts[value]++);
+            
+            // Find most common values
+            let maxCount = 0;
+            let bestValue = 1;
+            
+            for (let i = 1; i <= 6; i++) {
+                if (counts[i] > maxCount) {
+                    maxCount = counts[i];
+                    bestValue = i;
+                }
+            }
+            
+            if (maxCount >= 2) {
+                return `the ${bestValue}s`;
+            } else {
+                return "high-value dice (5s and 6s)";
+            }
+        }
+
+        // Score a category
+        function scoreCategory(category, player) {
+            if (player !== currentPlayer || rollsLeft === 3) {
+                return; // Can't score on first roll
+            }
+            
+            const cell = document.querySelector(`[data-category="${category}"][data-player="${player}"]`);
+            if (cell && !cell.classList.contains('filled')) {
+                const possibleScores = calculateScores();
+                const score = possibleScores[category] || 0;
+                
+                // Update scores object
+                scores[player][category] = score;
+                
+                // Update display
+                cell.textContent = score;
+                cell.classList.add('filled');
+                cell.classList.remove('possible-score', 'suggested');
+                
+                // Switch players and reset for next turn
+                currentPlayer = currentPlayer === 'you' ? 'amy' : 'you';
+                rollsLeft = 3;
+                heldDice.clear();
+                
+                // Generate new dice for next player
+                currentDice = [1, 1, 1, 1, 1, 1];
+                generateDice();
+                updateRollButton();
+                updateScoreboard();
+                showAISuggestion();
+                
+                // Check for game end
+                if (isGameComplete()) {
+                    endGame();
+                }
+            }
+        }
+
+        // Check if game is complete
+        function isGameComplete() {
+            const youComplete = Object.values(scores.you).every(score => score !== null);
+            const amyComplete = Object.values(scores.amy).every(score => score !== null);
+            return youComplete && amyComplete;
+        }
+
+        // End game and show results
+        function endGame() {
+            const youTotal = parseInt(document.querySelector('[data-category="total"][data-player="you"]').textContent);
+            const amyTotal = parseInt(document.querySelector('[data-category="total"][data-player="amy"]').textContent);
+            
+            let message = `Game Over!\n\nFinal Scores:\nYou: ${youTotal}\nAmy: ${amyTotal}\n\n`;
+            
+            if (youTotal > amyTotal) {
+                message += "🎉 You Win! 🎉";
+            } else if (amyTotal > youTotal) {
+                message += "😔 Amy Wins! 😔";
+            } else {
+                message += "🤝 It's a Tie! 🤝";
+            }
+            
+            setTimeout(() => {
+                alert(message);
+                if (confirm('Play again?')) {
+                    restartGame();
+                }
+            }, 500);
+        }
+
+        // Game control functions
+        function goBack() {
+            if (confirm('Are you sure you want to go back?')) {
+                window.history.back();
+            }
+        }
+
+        function restartGame() {
+            if (confirm('Are you sure you want to restart the game?')) {
+                // Reset scores
+                scores = {
+                    you: {
+                        ones: null, twos: null, threes: null, fours: null, fives: null, sixes: null,
+                        three_of_a_kind: null, four_of_a_kind: null, full_house: null,
+                        small_straight: null, large_straight: null, yatzy: null, chance: null
+                    },
+                    amy: {
+                        ones: null, twos: null, threes: null, fours: null, fives: null, sixes: null,
+                        three_of_a_kind: null, four_of_a_kind: null, full_house: null,
+                        small_straight: null, large_straight: null, yatzy: null, chance: null
+                    }
+                };
+                
+                // Reset game state
+                currentDice = [1, 1, 1, 1, 1, 1];
+                heldDice.clear();
+                currentPlayer = 'you';
+                rollsLeft = 3;
+                
+                // Clear all filled scores
+                document.querySelectorAll('.filled').forEach(cell => {
+                    cell.textContent = '';
+                    cell.classList.remove('filled');
+                });
+                
+                initGame();
+            }
+        }
+
+        function toggleSound() {
+            const soundBtn = document.querySelector('[onclick="toggleSound()"]');
+            if (soundBtn.textContent === '🔊') {
+                soundBtn.textContent = '🔇';
+                soundBtn.title = 'Sound Off';
+            } else {
+                soundBtn.textContent = '🔊';
+                soundBtn.title = 'Sound On';
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initGame();
+        });
+
+        // Add click handlers for scoreboard cells
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('[data-category]') && !e.target.classList.contains('filled')) {
+                const category = e.target.dataset.category;
+                const player = e.target.dataset.player;
+                
+                if (category !== 'sum' && category !== 'bonus' && category !== 'total') {
+                    scoreCategory(category, player);
+                }
+            }
+        });
+
+        // Bot player logic (if playing against AI)
+        function botTurn() {
+            if (currentPlayer === 'amy' && gameMode === 'bot') {
+                setTimeout(() => {
+                    // Simple bot strategy: roll up to 2 times, then pick best available score
+                    if (rollsLeft > 1) {
+                        rollDice();
+                        setTimeout(() => {
+                            // Hold dice that could lead to better scores
+                            const counts = new Array(7).fill(0);
+                            currentDice.forEach(value => counts[value]++);
+                            
+                            for (let i = 0; i < currentDice.length; i++) {
+                                if (counts[currentDice[i]] >= 2) {
+                                    heldDice.add(i);
+                                }
+                            }
+                            
+                            generateDice();
+                            rollDice();
+                        }, 1000);
+                    } else {
+                        // Pick best available score
+                        const possibleScores = calculateScores();
+                        let bestCategory = null;
+                        let bestScore = -1;
+                        
+                        Object.keys(possibleScores).forEach(category => {
+                            if (!scores.amy[category] && possibleScores[category] > bestScore) {
+                                bestScore = possibleScores[category];
+                                bestCategory = category;
+                            }
+                        });
+                        
+                        if (bestCategory) {
+                            scoreCategory(bestCategory, 'amy');
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        // Trigger bot turn after player's turn
+        const originalScoreCategory = scoreCategory;
+        scoreCategory = function(category, player) {
+            originalScoreCategory(category, player);
+            if (gameMode === 'bot') {
+                botTurn();
+            }
+        };
+    </script>
+</body>
+</html>

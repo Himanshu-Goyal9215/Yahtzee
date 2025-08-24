@@ -17,7 +17,7 @@
                 <span class="info-label">ROUND:</span>
                 <span class="info-value" id="current-round">1</span>
                 <span class="info-label">ROLLS:</span>
-                <span class="info-value" id="rolls-left">2</span>
+                <span class="info-value" id="rolls-left">3</span>
             </div>
         </div>
 
@@ -139,48 +139,26 @@
                 </div>
             </div>
 
-            <!-- Bottom Controls (Pinned Footer) -->
-            <div class="bottom-controls">
-                <!-- Dice Row -->
-                <div class="dice-container">
-                    <div class="die" data-index="0">
-                        <div class="die-face">?</div>
-                        <div class="die-keep">
-                            <input type="checkbox" id="keep-0" class="keep-checkbox">
-                            <label for="keep-0">Keep</label>
-                        </div>
-                    </div>
-                    <div class="die" data-index="1">
-                        <div class="die-face">?</div>
-                        <div class="die-keep">
-                            <input type="checkbox" id="keep-1" class="keep-checkbox">
-                            <label for="keep-1">Keep</label>
-                        </div>
-                    </div>
-                    <div class="die" data-index="2">
-                        <div class="die-face">?</div>
-                        <div class="die-keep">
-                            <input type="checkbox" id="keep-2" class="keep-checkbox">
-                            <label for="keep-2">Keep</label>
-                        </div>
-                    </div>
-                    <div class="die" data-index="3">
-                        <div class="die-face">?</div>
-                        <div class="die-keep">
-                            <input type="checkbox" id="keep-3" class="keep-checkbox">
-                            <label for="keep-3">Keep</label>
-                        </div>
-                    </div>
-                    <div class="die" data-index="4">
-                        <div class="die-face">?</div>
-                        <div class="die-keep">
-                            <input type="checkbox" id="keep-4" class="keep-checkbox">
-                            <label for="keep-4">Keep</label>
-                        </div>
+            <!-- Center Dice Area -->
+            <div class="center-dice-area">
+                <div class="dice-cup" id="dice-cup">
+                    <div class="cup-handle"></div>
+                    <div class="cup-body">
+                        <div class="cup-rim"></div>
                     </div>
                 </div>
                 
-                <!-- Roll Button -->
+                <div class="dice-rolling-area" id="dice-rolling-area">
+                    <!-- Dice will appear here when rolled -->
+                </div>
+                
+                <div class="dice-selection-area" id="dice-selection-area">
+                    <!-- Selected dice will appear here -->
+                </div>
+            </div>
+
+            <!-- Bottom Controls -->
+            <div class="bottom-controls">
                 <button id="roll-btn" class="roll-button">ROLL</button>
             </div>
         </div>
@@ -263,7 +241,7 @@
                 </div>
                 <div class="rule-section">
                     <h3>How to Play</h3>
-                    <p>Roll the dice up to 3 times per turn. Keep dice you want to save by clicking them. Choose a category to score your roll. Each category can only be used once per game.</p>
+                    <p>Roll the dice up to 3 times per turn. Click on dice to select them and keep them for the next roll. Choose a category to score your roll. Each category can only be used once per game.</p>
                 </div>
             </div>
         </div>

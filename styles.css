@@ -196,182 +196,164 @@ body {
     overflow-y: auto;
 }
 
-.score-cell {
-    height: 48px;
+/* Center Dice Area */
+.center-dice-area {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: white;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.score-cell:hover:not(.used) {
-    background: rgba(0, 0, 0, 0.02);
-    transform: scale(1.02);
-}
-
-.score-cell.used {
-    cursor: not-allowed;
-}
-
-/* Player A Score Cells */
-.player-a .score-cell.used {
-    background: #FDECEF;
-    color: #E12D39;
-    animation: scoreUpdate 0.3s ease;
-}
-
-.player-a .score-cell.used::after {
-    content: attr(data-score);
-    position: absolute;
-    right: 8px;
-    color: #E12D39;
-    font-weight: 600;
-}
-
-/* Player B Score Cells */
-.player-b .score-cell.used {
-    background: #E6F9EF;
-    color: #2BBF88;
-    animation: scoreUpdate 0.3s ease;
-}
-
-.player-b .score-cell.used::after {
-    content: attr(data-score);
-    position: absolute;
-    right: 8px;
-    color: #2BBF88;
-    font-weight: 600;
-}
-
-/* Potential Score Display */
-.score-cell.has-potential::before {
-    content: attr(data-potential);
-    position: absolute;
-    right: 8px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    opacity: 0.8;
-    animation: fadeIn 0.3s ease;
-}
-
-.player-a .score-cell.has-potential::before {
-    color: #E12D39;
-}
-
-.player-b .score-cell.has-potential::before {
-    color: #2BBF88;
-}
-
-/* Bottom Controls (Pinned Footer) */
-.bottom-controls {
-    background: rgba(255, 255, 255, 0.95);
+    gap: 20px;
+    padding: 20px;
+    background: #2d5a27;
     border-radius: 16px;
-    padding: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    flex: 0 0 auto;
+    margin: 12px;
+    min-height: 200px;
+    position: relative;
 }
 
-.dice-container {
+/* Dice Cup */
+.dice-cup {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.dice-cup:hover {
+    transform: scale(1.05);
+}
+
+.cup-body {
+    width: 80px;
+    height: 60px;
+    background: #8b4513;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cup-rim {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 3px solid #654321;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.cup-handle {
+    position: absolute;
+    top: -15px;
+    right: -20px;
+    width: 20px;
+    height: 30px;
+    background: #654321;
+    border-radius: 10px;
+    transform: rotate(15deg);
+}
+
+/* Dice Rolling Area */
+.dice-rolling-area {
     display: flex;
-    gap: 8px;
+    gap: 15px;
+    flex-wrap: wrap;
     justify-content: center;
+    min-height: 80px;
+    align-items: center;
 }
 
-.die {
+/* Dice Selection Area */
+.dice-selection-area {
     display: flex;
-    flex-direction: column;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: 80px;
     align-items: center;
-    gap: 4px;
+}
+
+/* Individual Die */
+.die {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border: 3px solid #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
 .die:hover {
-    transform: translateY(-2px);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
-.die-face {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(145deg, #ffffff, #e6e6e6);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #4a5568;
-    box-shadow: 2px 2px 8px #d1d1d1, -2px -2px 8px #ffffff;
-    transition: all 0.3s ease;
+.die.selected {
+    background: #4CAF50;
+    color: white;
+    border-color: #45a049;
+    transform: scale(1.1);
 }
 
-.die-face.rolling {
+.die.rolling {
     animation: roll 0.5s ease-in-out;
 }
 
-.die-keep {
+@keyframes roll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(90deg) scale(1.1); }
+    50% { transform: rotate(180deg) scale(0.9); }
+    75% { transform: rotate(270deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+.die-face {
+    font-size: 28px;
+}
+
+/* Bottom Controls */
+.bottom-controls {
     display: flex;
-    align-items: center;
-    gap: 3px;
-}
-
-.keep-checkbox {
-    display: none;
-}
-
-.die-keep label {
-    font-size: 0.5rem;
-    color: #718096;
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    font-weight: 500;
-}
-
-.keep-checkbox:checked + label {
-    background: #667eea;
-    color: white;
-    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+    justify-content: center;
+    padding: 20px;
 }
 
 .roll-button {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(45deg, #ff6b35, #f7931e);
     color: white;
     border: none;
-    width: 120px;
-    height: 48px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.4);
+    letter-spacing: 1px;
 }
 
-.roll-button:hover:not(:disabled) {
+.roll-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+}
+
+.roll-button:active {
+    transform: translateY(0);
 }
 
 .roll-button:disabled {
-    opacity: 0.6;
+    background: #ccc;
     cursor: not-allowed;
     transform: none;
-    background: linear-gradient(135deg, #a0aec0, #718096);
+    box-shadow: none;
 }
 
 /* Game Controls */
@@ -553,11 +535,6 @@ body {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-@keyframes roll {
-    0%, 100% { transform: rotateY(0deg); }
-    50% { transform: rotateY(180deg); }
-}
-
 @keyframes scoreUpdate {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
@@ -580,7 +557,40 @@ body {
     }
 }
 
-/* Responsive Design */
+/* Score Cells - Updated for better visibility */
+.score-cell {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.score-cell:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.score-cell.selected {
+    background: rgba(59, 130, 246, 0.2);
+    border-left: 4px solid #3b82f6;
+}
+
+.score-cell.filled {
+    background: rgba(34, 197, 94, 0.1);
+    color: #166534;
+}
+
+.score-cell.possible-score {
+    background: rgba(251, 191, 36, 0.1);
+    color: #92400e;
+    font-weight: 700;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .game-container {
         padding: 10px;
@@ -630,10 +640,22 @@ body {
         font-size: 0.8rem;
     }
     
-    .die-face {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
+    .die {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .cup-body {
+        width: 60px;
+        height: 45px;
+    }
+    
+    .cup-handle {
+        width: 15px;
+        height: 25px;
+        right: -15px;
+        top: -12px;
     }
     
     .roll-button {
