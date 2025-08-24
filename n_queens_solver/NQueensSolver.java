@@ -1,203 +1,125 @@
+import java.util.concurrent.atomic.AtomicLong;
+
 public class NQueensSolver {
     private int n;
     private int[] queens;
-    private int solutionsCount;
-    private static final int MAX_SOLUTIONS = 100; // Limit solutions for display
+    private static final AtomicLong nodes = new AtomicLong(0);
 
     public NQueensSolver(int n) {
         this.n = n;
         this.queens = new int[n];
-        this.solutionsCount = 0;
     }
 
     public static void main(String[] args) {
-        int n = 8; // Default to 8-queens problem
+        int n = 30; // default
         if (args.length > 0) {
             try {
                 n = Integer.parseInt(args[0]);
-                if (n <= 0) {
-                    System.out.println("Board size must be positive. Using default size 8.");
-                    n = 8;
-                }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid board size. Using default size 8.");
-                n = 8;
+                System.out.println("Invalid size, using default 30.");
             }
+        }
+
+        if (n < 1 || n > 63) {
+            System.out.println("Unsupported board size. Please use 1 <= n <= 63 (fits in a long).");
+            return;
         }
 
         System.out.println("Solving " + n + "-Queens Problem...");
-        System.out.println("=====================================");
-
         NQueensSolver solver = new NQueensSolver(n);
+
         long startTime = System.currentTimeMillis();
-        
-        boolean hasSolution = solver.solve();
+        boolean found = solver.solve();
         long endTime = System.currentTimeMillis();
 
-        if (hasSolution) {
-            System.out.println("\nFirst solution found:");
+        if (found) {
+            System.out.println("\nOne valid solution for " + n + " queens:");
             solver.printBoard();
-            
-            System.out.println("\nFinding all solutions...");
-            solver.findAllSolutions();
-            
-            System.out.println("\nTotal solutions found: " + solver.getSolutionsCount());
-            System.out.println("Time taken: " + (endTime - startTime) + " ms");
         } else {
-            System.out.println("No solution exists for " + n + "-queens problem.");
+            System.out.println("No solution exists.");
         }
+
+        System.out.printf("Nodes explored: %d%n", nodes.get());
+        System.out.printf("Time taken: %.2f ms%n", (endTime - startTime) * 1.0);
     }
 
+    /**
+     * Top-level solve with symmetry-first ordering and instrumentation.
+     */
     public boolean solve() {
-        return solveQueens(0);
-    }
+        nodes.set(0);
 
-    private boolean solveQueens(int col) {
-        if (col >= n) {
-            return true;
+        // Try first half columns on row 0 to exploit mirror symmetry
+        int half = n / 2;
+
+        // Try first half columns
+        for (int c = 0; c < half; c++) {
+            long bit = 1L << c;
+            queens[0] = c;
+            if (placeQueen(1, bit, (bit) << 1, (bit) >>> 1)) {
+                return true;
+            }
         }
 
-        for (int row = 0; row < n; row++) {
-            if (isSafe(row, col)) {
-                queens[col] = row;
-                
-                if (solveQueens(col + 1)) {
-                    return true;
-                }
-                
-                queens[col] = 0; // Backtrack
+        // If n is odd, try the center column
+        if ((n & 1) == 1) {
+            int c = half;
+            long bit = 1L << c;
+            queens[0] = c;
+            if (placeQueen(1, bit, (bit) << 1, (bit) >>> 1)) {
+                return true;
             }
+        }
+
+        // If not found yet, try the remaining columns (mirror side)
+        for (int c = half + (n & 1); c < n; c++) {
+            long bit = 1L << c;
+            queens[0] = c;
+            if (placeQueen(1, bit, (bit) << 1, (bit) >>> 1)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Recursive bit-mask solver. Counts nodes (calls) in nodes.
+     * Uses unsigned right shift >>> for d2 propagation.
+     */
+    private boolean placeQueen(int row, long cols, long d1, long d2) {
+        nodes.incrementAndGet();
+        if (row == n) return true;
+
+        long allOnes = (n == 64) ? -1L : ((1L << n) - 1L);
+        long available = allOnes & ~(cols | d1 | d2);
+
+        while (available != 0L) {
+            long bit = available & -available; // pick lowest set bit
+            int col = Long.numberOfTrailingZeros(bit);
+
+            queens[row] = col;
+
+            // propagate diagonals: d1 << 1, d2 >>> 1 (unsigned)
+            if (placeQueen(row + 1,
+                           cols | bit,
+                           (d1 | bit) << 1,
+                           (d2 | bit) >>> 1)) {
+                return true;
+            }
+
+            // remove lowest set bit and continue
+            available &= available - 1;
         }
         return false;
     }
 
-    public void findAllSolutions() {
-        solutionsCount = 0;
-        findAllSolutions(0);
-    }
-
-    private void findAllSolutions(int col) {
-        if (col >= n) {
-            solutionsCount++;
-            if (solutionsCount <= 5) { // Show first 5 solutions
-                System.out.println("\nSolution " + solutionsCount + ":");
-                printBoard();
-            }
-            return;
-        }
-
-        for (int row = 0; row < n; row++) {
-            if (isSafe(row, col)) {
-                queens[col] = row;
-                findAllSolutions(col + 1);
-                queens[col] = 0; // Backtrack
-            }
-        }
-    }
-
-    private boolean isSafe(int row, int col) {
-        // Check row
-        for (int c = 0; c < col; c++) {
-            if (queens[c] == row) {
-                return false;
-            }
-        }
-
-        // Check upper diagonal
-        for (int c = col - 1, r = row - 1; c >= 0 && r >= 0; c--, r--) {
-            if (queens[c] == r) {
-                return false;
-            }
-        }
-
-        // Check lower diagonal
-        for (int c = col - 1, r = row + 1; c >= 0 && r < n; c--, r++) {
-            if (queens[c] == r) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public void printBoard() {
-        for (int i = 0; i < n; i++) {
-            System.out.print("+");
-            for (int j = 0; j < n; j++) {
-                System.out.print("---+");
+        for (int r = 0; r < n; r++) {
+            for (int c = 0; c < n; c++) {
+                System.out.print(queens[r] == c ? " Q " : " . ");
             }
             System.out.println();
-            
-            System.out.print("|");
-            for (int j = 0; j < n; j++) {
-                if (queens[j] == i) {
-                    System.out.print(" Q |");
-                } else {
-                    System.out.print("   |");
-                }
-            }
-            System.out.println();
-        }
-        
-        System.out.print("+");
-        for (int j = 0; j < n; j++) {
-            System.out.print("---+");
-        }
-        System.out.println();
-    }
-
-    public int[] getQueens() {
-        return queens.clone();
-    }
-
-    public int getSolutionsCount() {
-        return solutionsCount;
-    }
-
-    public int getN() {
-        return n;
-    }
-
-    // Method to check if a specific position is safe
-    public boolean isPositionSafe(int row, int col) {
-        // Temporarily place a queen
-        int temp = queens[col];
-        queens[col] = row;
-        
-        boolean safe = isSafe(row, col);
-        
-        // Restore original state
-        queens[col] = temp;
-        
-        return safe;
-    }
-
-    // Method to get all solutions as arrays
-    public int[][] getAllSolutions() {
-        solutionsCount = 0;
-        java.util.List<int[]> solutions = new java.util.ArrayList<>();
-        collectAllSolutions(0, solutions);
-        
-        int[][] result = new int[solutions.size()][n];
-        for (int i = 0; i < solutions.size(); i++) {
-            result[i] = solutions.get(i);
-        }
-        
-        return result;
-    }
-
-    private void collectAllSolutions(int col, java.util.List<int[]> solutions) {
-        if (col >= n) {
-            solutions.add(queens.clone());
-            return;
-        }
-
-        for (int row = 0; row < n; row++) {
-            if (isSafe(row, col)) {
-                queens[col] = row;
-                collectAllSolutions(col + 1, solutions);
-                queens[col] = 0; // Backtrack
-            }
         }
     }
 }
